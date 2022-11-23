@@ -31,7 +31,8 @@ library(tidyverse)
 base_url <- 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
 request <- GET(base_url, query = list(begin_date = '19180304',
                                       end_date = '19180404',
-                                      print_headline = 'Pandemic',
+                                      source = 'The New York Times',
+                                      keywords = 'Pandemic',
                                       sort = 'oldest'))
 
 class(request)
@@ -45,7 +46,7 @@ request$url
 ```
 ```{r}
 response <- content(request, as = "text", encoding = "UTF-8")
-spanishfludata <- fromJSON(response, flatten = TRUE)$data #%>% data.frame()
+spanishfludata <- fromJSON(response, flatten = TRUE) %>% data.frame()
 
 ```
 
