@@ -30,22 +30,23 @@ library(tidyverse)
 ```{r}
 base_url <- 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
 request <- GET(base_url, query = list(begin_date = '19180304',
-                                      end_date = '19180404',
-                                      print_headline = 'Pandemic',
+                                      end_date = '19180504',
+                                      source = 'The New York Times',
+                                      keywords = 'pandemic',
                                       sort = 'oldest'))
 
 class(request)
 ```
 
 ```{r}
-# Check to see if we were successful (we want 200)
+# Check to see if we were successful 
 request$status_code
 request$url
 
 ```
+
 ```{r}
 response <- content(request, as = "text", encoding = "UTF-8")
-spanishfludata <- fromJSON(response, flatten = TRUE)$data #%>% data.frame()
-
+spanishfludata <- fromJSON(response, flatten = TRUE) %>% data.frame()
 ```
 
