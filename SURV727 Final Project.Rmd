@@ -30,9 +30,15 @@ library(tidyverse)
 ```{r}
 base_url <- 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
 request <- GET(base_url, query = list(begin_date = '19180304',
+<<<<<<< HEAD
                                       end_date = '19180504',
                                       source = 'The New York Times',
                                       keywords = 'pandemic',
+=======
+                                      end_date = '19180404',
+                                      source = 'The New York Times',
+                                      keywords = 'Pandemic',
+>>>>>>> 98bce8659b805b78593c45765a1e69e62eae4442
                                       sort = 'oldest'))
 
 class(request)
@@ -48,5 +54,9 @@ request$url
 ```{r}
 response <- content(request, as = "text", encoding = "UTF-8")
 spanishfludata <- fromJSON(response, flatten = TRUE) %>% data.frame()
+<<<<<<< HEAD
+=======
+
+>>>>>>> 98bce8659b805b78593c45765a1e69e62eae4442
 ```
 
