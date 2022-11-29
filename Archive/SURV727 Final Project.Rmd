@@ -1,0 +1,51 @@
+---
+title: "SURV727 Final Project"
+author: "Anthony Garove and Ujjayini Das"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Packages
+
+```{r}
+if (!requireNamespace("httr", quietly = TRUE)) {
+  install.packages("httr")
+}
+if (!requireNamespace("jsonlite", quietly = TRUE)) {
+  install.packages("jsonlite")
+}
+
+library('httr')
+library('jsonlite')
+library(tidyverse)
+
+```
+
+## URL and Query
+
+```{r}
+base_url <- 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
+request <- GET(base_url, query = list(begin_date = '19180304',
+                                      end_date = '19180404',
+                                      print_headline = 'Pandemic',
+                                      sort = 'oldest'))
+
+class(request)
+```
+
+```{r}
+# Check to see if we were successful (we want 200)
+request$status_code
+request$url
+
+```
+```{r}
+response <- content(request, as = "text", encoding = "UTF-8")
+spanishfludata <- fromJSON(response, flatten = TRUE)$data #%>% data.frame()
+
+```
+
