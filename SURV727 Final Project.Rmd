@@ -55,6 +55,7 @@ spanishfludata <- fromJSON(response1, flatten = TRUE) %>% data.frame()
 response2 <- content(request2, as = "text", encoding = "UTF-8")
 coviddata <- fromJSON(response2, flatten = TRUE) %>% data.frame()
 
+
 ```
 
-# Extract 
+# Extract Subsetted Data
