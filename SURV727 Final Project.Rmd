@@ -22,7 +22,8 @@ if (!requireNamespace("jsonlite", quietly = TRUE)) {
 library('httr')
 library('jsonlite')
 library(tidyverse)
-
+library(quanteda)
+library(topicmodels)
 ```
 
 ## URL and Query
@@ -39,7 +40,7 @@ class(request2)
 ```
 
 ```{r}
-# Check to see if we were successful (we want 200)
+# Check to see if we were successful
 request1$status_code
 request1$url
 
@@ -48,14 +49,44 @@ request2$url
 
 ```
 
+# Getting the Content as Data Frames
+
 ```{r}
 response1 <- content(request1, as = "text", encoding = "UTF-8")
 spanishfludata <- fromJSON(response1, flatten = TRUE) %>% data.frame()
 
 response2 <- content(request2, as = "text", encoding = "UTF-8")
 coviddata <- fromJSON(response2, flatten = TRUE) %>% data.frame()
-
-
 ```
 
 # Extract Subsetted Data
+
+```{r}
+headline_spanish <- spanishfludata[,19]
+headline_covid <- coviddata[,20]
+```
+
+# Text Mining
+
+```{r}
+
+# Tokenization
+
+headline_spanish_gsub <- gsub("'","",headline_spanish)
+headline_covid_gsub <- gsub("’","",headline_covid)
+token_spanish <- tokens(headline_spanish_gsub,
+                        remove_punct = TRUE,
+                        remove_numbers = TRUE,
+                        remove_symbols = TRUE) %>%
+  tokens_tolower()
+
+token_covid <- tokens(headline_covid_gsub,
+                        remove_punct = TRUE,
+                        remove_numbers = TRUE,
+                        remove_symbols = TRUE) %>%
+  tokens_tolower()
+
+# Lemmatization
+
+
+```
