@@ -176,3 +176,41 @@ DTM_covid <- DTM_covid[sel_idx_covid, ]
 corpus_covid <- corpus_covid[sel_idx_covid, ]
 
 ```
+
+## Topic models
+
+```{r}
+K_spanish <- 20
+# Set seed to make results reproducible
+set.seed(1234)
+topicModel_spanish <- LDA(DTM_spanish, 
+                  K_spanish, 
+                  method="Gibbs", 
+                  control=list(iter = 500, 
+                               verbose = 25))
+```
+```{r}
+tmResult_spanish <- posterior(topicModel_spanish)
+
+
+# Topics are distributions over the entire vocabulary
+
+beta_spanish <- tmResult_spanish$terms
+glimpse(beta_spanish)            
+
+# Each doc has a distribution over k topics
+
+theta_spanish <- tmResult_spanish$topics
+glimpse(theta_spanish)               
+
+terms(topicModel_spanish, 10)
+
+# Top terms per topic. Use top 5 to interpret topics
+top5termsPerTopic_spanish <- terms(topicModel_spanish, 
+                           5)
+# For the next steps, we want to give the topics more descriptive names than just numbers. Therefore, we simply concatenate the five most likely terms of each topic to a string that represents a pseudo-name for each topic.
+topicNames_spanish <- apply(top5termsPerTopic_spanish, 
+                    2, 
+                    paste, 
+                    collapse=" ")
+```
