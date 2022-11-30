@@ -114,3 +114,35 @@ corpus_covid <- corpus_covid %>%
                              tokens_ngrams(1)
 
 ```
+
+## Create DTM - Spanish Flu
+
+```{r}
+
+#  Create dtm
+DTM_spanish <- dfm(corpus_spanish)
+
+# Minimum
+minimumFrequency <- 10
+DTM_spanish <- dfm_trim(DTM_spanish, 
+                min_docfreq = minimumFrequency,
+                max_docfreq = 1000000)
+
+# keep only letters... brute force
+DTM_spanish  <- dfm_select(DTM_spanish, 
+                   pattern = "[a-z]", 
+                   valuetype = "regex", 
+                   selection = 'keep')
+colnames(DTM_spanish) <- stringi::stri_replace_all_regex(colnames(DTM_spanish), 
+                                                 "[^_a-z]","")
+
+DTM_spanish <- dfm_compress(DTM_spanish, "features")
+
+# We have several rows which do not have any content left. Drop them.
+
+sel_idx_spanish <- rowSums(DTM_spanish) > 0
+DTM_spanish <- DTM_spanish[sel_idx_spanish, ]
+corpus_spanish <- corpus_spanish[sel_idx_spanish, ]
+
+```
+
