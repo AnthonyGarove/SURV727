@@ -87,6 +87,30 @@ token_covid <- tokens(headline_covid_gsub,
   tokens_tolower()
 
 # Lemmatization
+library(haven)
+lemmaData <- read_sav("./lemma_spss.sav")
 
+```
+
+## Make Corpora
+
+```{r}
+corpus_spanish <-  tokens_replace(token_spanish, # "Substitute token types based on vectorized one-to-one matching"
+                                    lemmaData$inflected_form, 
+                                    lemmaData$lemma,
+                                    valuetype = "fixed") 
+
+corpus_spanish <- corpus_spanish %>%
+                             tokens_remove(stopwords("english")) %>%
+                             tokens_ngrams(1)
+
+corpus_covid <-  tokens_replace(token_covid, # "Substitute token types based on vectorized one-to-one matching"
+                                    lemmaData$inflected_form, 
+                                    lemmaData$lemma,
+                                    valuetype = "fixed") 
+
+corpus_covid <- corpus_covid %>%
+                             tokens_remove(stopwords("english")) %>%
+                             tokens_ngrams(1)
 
 ```
