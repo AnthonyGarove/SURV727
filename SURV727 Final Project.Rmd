@@ -275,3 +275,29 @@ topicProportions_covid <- colSums(theta_covid) / nrow(DTM_covid)  # average prob
 names(topicProportions_covid) <- topicNames_covid     # Topic Names
 sort(topicProportions_covid, decreasing = TRUE) # sort
 ```
+
+## Modifying alpha value - spanish flu
+
+```{r}
+# What was the value in the previous model?
+attr(topicModel_spanish, "alpha") 
+
+# Re-estimate model with alpha set by us
+topicModel_spanish2 <- LDA(DTM_spanish, 
+                   K_spanish, 
+                   method="Gibbs", 
+                   control=list(iter = 500, 
+                                verbose = 25, 
+                                alpha = 0.2))
+tmResult_spanish2 <- posterior(topicModel_spanish2)
+theta_spanish2 <- tmResult_spanish2$topics
+beta_spanish2 <- tmResult_spanish2$terms
+
+
+topicProportions_spanish2 <- colSums(theta_spanish2) / nrow(DTM_spanish)  # average probability over all paragraphs
+names(topicProportions_spanish2) <- topicNames_spanish     # Topic Names 
+sort(topicProportions_spanish2, decreasing = TRUE) # sort
+
+topicNames_spanish2 <- apply(terms(topicModel_spanish2, 5), 2, paste, collapse = " ")  # top five terms per topic 
+```
+
