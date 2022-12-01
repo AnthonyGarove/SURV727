@@ -267,3 +267,11 @@ topicProportions_spanish <- colSums(theta_spanish) / nrow(DTM_spanish)  # averag
 names(topicProportions_spanish) <- topicNames_spanish     # Topic Names
 sort(topicProportions_spanish, decreasing = TRUE) # sort
 ```
+
+## What are the most common topics? Covid
+```{r}
+
+topicProportions_covid <- colSums(theta_covid) / nrow(DTM_covid)  # average probability over all headlines
+names(topicProportions_covid) <- topicNames_covid     # Topic Names
+sort(topicProportions_covid, decreasing = TRUE) # sort
+```
