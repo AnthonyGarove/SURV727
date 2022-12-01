@@ -185,7 +185,7 @@ corpus_covid <- corpus_covid[sel_idx_covid, ]
 
 ## Spanish Flu
 
-K_spanish <- 20
+K_spanish <- 15
 # Set seed to make results reproducible
 set.seed(1234)
 topicModel_spanish <- LDA(DTM_spanish, 
@@ -221,10 +221,12 @@ topicNames_spanish <- apply(top5termsPerTopic_spanish,
 
 
 
+```
 
+```{r}
 ## Covid
 
-K_covid <- 20
+K_covid <- 10
 # Set seed to make results reproducible
 set.seed(1234)
 topicModel_covid <- LDA(DTM_covid, 
@@ -258,4 +260,10 @@ topicNames_covid <- apply(top5termsPerTopic_covid,
                     collapse=" ")
 ```
 
+## What are the most common topics? Spanish flu
+```{r}
 
+topicProportions_spanish <- colSums(theta_spanish) / nrow(DTM_spanish)  # average probability over all headlines
+names(topicProportions_spanish) <- topicNames_spanish     # Topic Names
+sort(topicProportions_spanish, decreasing = TRUE) # sort
+```
