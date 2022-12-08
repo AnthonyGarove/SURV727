@@ -473,8 +473,8 @@ glimpse(theta_covid_gsub2)
 terms(topicModel_covid_gsub2, 10)
 
 # Top terms per topic;Using top 5 to interpret topics
-top3termsPerTopic_covid_gsub2 <- terms(topicModel_covid_gsub2, 
-                           3)
+top5termsPerTopic_covid_gsub2 <- terms(topicModel_covid_gsub2, 
+                           5)
 
 topicNames_covid_gsub2 <- apply(top3termsPerTopic_covid_gsub2, 
                     2, 
@@ -492,7 +492,7 @@ covid_topics_gsub2
 
 top_terms_covid_gsub2 <- covid_topics_gsub2 %>%
   group_by(topic) %>%
-  slice_max(beta, n = 10) %>% 
+  slice_max(beta, n = 5) %>% 
   ungroup() %>%
   arrange(topic, -beta)
 
