@@ -328,6 +328,7 @@ sort(topicProportions_covid2, decreasing = TRUE) # sort
 topicNames_covid2 <- apply(terms(topicModel_covid2, 5), 2, paste, collapse = " ")  # top five terms per topic 
 ```
 
+
 ## Visualization
 
 ```{r}
@@ -374,7 +375,7 @@ top_terms_covid <- covid_topics %>%
   ungroup() %>%
   arrange(topic, -beta)
 
-top_terms_covid %>%
+top_terms_covid_graph <-top_terms_covid %>%
   mutate(term = reorder_within(term, beta, topic)) %>%
   ggplot(aes(beta, term, fill = factor(topic))) +
   theme(text = element_text(size=10),
@@ -384,5 +385,7 @@ top_terms_covid %>%
   facet_wrap(~ topic, scales = "free", ncol= 4) +
   scale_y_reordered()+
   ggtitle("Distribution of Top 5 Terms per Topic for COVID")
+
+print(top_terms_covid_graph)
 
 ```
