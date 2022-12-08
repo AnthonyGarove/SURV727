@@ -501,7 +501,7 @@ top_terms_covid_graph_gsub2 <-top_terms_covid_gsub2 %>%
   ggplot(aes(beta, term, fill = factor(topic))) +
   theme(text = element_text(size=7),
         axis.text.x = element_text(angle=60, hjust=1)) + 
-  xlim(0.00, 0.2) +
+  xlim(0.00, 0.30) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free", ncol= 4) +
   scale_y_reordered()+
