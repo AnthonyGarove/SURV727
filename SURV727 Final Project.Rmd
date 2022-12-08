@@ -181,7 +181,7 @@ corpus_covid <- corpus_covid[sel_idx_covid, ]
 
 ```{r}
 
-## Starting out with 20 topics
+
 
 ## Spanish Flu
 
@@ -261,6 +261,7 @@ topicNames_covid <- apply(top5termsPerTopic_covid,
 ```
 
 ## What are the most common topics? Spanish flu
+
 ```{r}
 
 topicProportions_spanish <- colSums(theta_spanish) / nrow(DTM_spanish)  # average probability over all headlines
