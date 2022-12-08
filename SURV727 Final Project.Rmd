@@ -327,3 +327,34 @@ sort(topicProportions_covid2, decreasing = TRUE) # sort
 topicNames_covid2 <- apply(terms(topicModel_covid2, 5), 2, paste, collapse = " ")  # top five terms per topic 
 ```
 
+## Visualization
+
+```{r}
+### Spanish Flu
+
+## Per Topic Term Distribution
+library(ggplot2)
+library(reshape2)
+library(tidytext)
+spanishflu_topics <- tidy(topicModel_spanish2,matrix = "beta")
+spanishflu_topics
+
+top_terms_spanish <- spanishflu_topics %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 5) %>% 
+  ungroup() %>%
+  arrange(topic, -beta)
+
+top_terms_spanish_graph <- top_terms_spanish %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+   theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=60, hjust=1)) + 
+  xlim(0.00,0.15)+
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free", ncol= 5) +
+  scale_y_reordered()+
+  ggtitle("Distribution of Top 5 Terms per Topic for Spanish Flu")
+
+print(top_terms_spanish_graph)
+```
