@@ -359,3 +359,30 @@ top_terms_spanish_graph <- top_terms_spanish %>%
 
 print(top_terms_spanish_graph)
 ```
+
+```{r}
+## COVID
+
+## Per Topic Term Distribution
+
+covid_topics <- tidy(topicModel_covid2,matrix = "beta")
+covid_topics
+
+top_terms_covid <- covid_topics %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 5) %>% 
+  ungroup() %>%
+  arrange(topic, -beta)
+
+top_terms_covid %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=60, hjust=1)) + 
+  xlim(0.00, 0.2) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free", ncol= 4) +
+  scale_y_reordered()+
+  ggtitle("Distribution of Top 5 Terms per Topic for COVID")
+
+```
