@@ -65,7 +65,7 @@ This section describes the data sources and the data gathering process.
 
  We used the New York Times Archive API to access N=12,028 article headlines published during the first month of each pandemic. To the best of our knowledge, the Spanish Flu was officially declared a pandemic on 4th March, 1918. The COVID-19 public health crisis was officially declared a pandemic on 11th March, 2020.
 
- We used the specific endpoints, month and year, while requesting for published article headlines from the New York Times Archive API with an authorised key. The following code was used to retrieve the data:
+ We used the specific endpoints, month and year, while requesting for published article headlines from the New York Times Archive API with an authorized key. The following code was used to retrieve the data:
 
 ```{r}
 # Building URLs
@@ -320,6 +320,16 @@ print(top_terms_covid_graph_gsub2)
 
 ## Discussion
 
-This section summarizes the results and may briefly outline advantages and limitations of the work presented.
+### Topic Model of NYT Article Headlines from the First Month of The Spanish Flu Pandemic
+
+  Our topic model of published NYT article headlines was specified to extract 15 topics. Topic one is comprised of words specifically related to the legislative process in the United States. Topic two is a bit more ambiguous than topic one, but has the words "war" and "president", suggesting that this topic might be related to World War I (WWI). Topic three appears to be about New York City (NYC), and also contains the word "obituary" and "title". Topic three could perhaps be reflective of obituaries of people from NYC. Topics four and fourteen are both comprised of words that could either describe sports or war. Topics five through seven all appear to be related to the US economy, markets, and goods. Topics eight through ten are similarly comprised of different nations involved in WWI, as well as other war-related terms. Topic eleven is similar to topics eight through ten, insofar as it appears to be related to WWI and contains a nation involved in the war (i.e., "American"). However, topic eleven does not seem to be as clearly related to an easily identifiable topic. Topic twelve consists of terms that mostly seem related to judicial processes. Topic thirteen is not so easy to interpret, though it appears to be gendered and related to women in some way. Topic thirteen could potentially be related to the woman's suffrage movement, which took place around the time of the Spanish Flu Pandemic and World War I. Topic fifteen is, again, related to WWI---and specifically comprised of terms that could be used when describing the army. Overall, it would appear the majority of the topics that were extracted from this corpus of headlines seem to be related to WWI, as well as different aspects of society affected by the war.
+
+### Topic Model of NYT Article Headlines from the First Month of The COVID-19 Pandemic 
+
+Discuss covid-19 topic model/charts
+
+### Overall Discussion
+
+Compare the two, overall summary of findings
 
 ## References
