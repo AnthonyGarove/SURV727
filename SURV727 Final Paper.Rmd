@@ -163,8 +163,12 @@ corpus_covid <- corpus_covid[sel_idx_covid, ]
 
   We used Latent Dirichlet Allocation (LDA) to examine topics from our two corpora of headlines. LDA is a frequently used algorithm for fitting a topic model. LDA is based on an assumption that documents used in your analysis are comprised of a mixture of topics, and that every topic is an amalgamation of words. LDA simultaneously finds the words associated with each topic while extracting the topics contained in each document.
   
-  We specified our LDA model to extract 
+#### LDA for Spanish Flu Headlines
 
+   Our initial LDA model was set to extract 20 topics with $\alpha = 3.33$ from the corpus containing New York Times article headlines during the first month of the Spanish Flu Pandemic. After examining the initial results, we reset our model to extract 15 topics with $\alpha$ to 0.2 to make the topics more comprehensible.   
+  
+  Next we observed the probability distributions of the 15 topics over all the headlines, given by `theta_spanish2` as well as the probability distribution of the words over all the 15 topics, given by `beta_spanish2`. To have a better understanding of the topics, we specifically looked into the five terms with the highest per-topic-per word probabilities within each topic.  
+  
 ```{r}
 K_spanish <- 15
 set.seed(1234)
@@ -177,20 +181,70 @@ topicModel_spanish2 <- LDA(DTM_spanish,
 tmResult_spanish2 <- posterior(topicModel_spanish2)
 theta_spanish2 <- tmResult_spanish2$topics
 beta_spanish2 <- tmResult_spanish2$terms
-topicProportions_spanish2 <- colSums(theta_spanish2) / nrow(DTM_spanish)  # average probability over all paragraphs
+topicProportions_spanish2 <- colSums(theta_spanish2) / nrow(DTM_spanish)  # average probability over all headlines
 names(topicProportions_spanish2) <- topicNames_spanish     # Topic Names 
 sort(topicProportions_spanish2, decreasing = TRUE) # sort
 topicNames_spanish2 <- apply(terms(topicModel_spanish2, 5), 2, paste, collapse = " ")  # top five terms per topic 
+```
 
 
+#### LDA for COVID-19 Headlines
+
+ Our initial LDA model was set to extract 20 topics with $\alpha = 5$ from the corpus containing New York Times article headlines during the first month of the COVID-19 Pandemic. After examining the initial results, we reset our model to extract 10 topics with $\alpha$ to 0.15 to make the topics more interpretable. At this point, we observed that the word `Coronavirus` appeared in all 10 topics with the highest $\beta$-- suggesting that `Coronavirus` is potentially a stopword specific to this corpus of text. 
+ 
+ Next we removed the term `Coronavirus` from the corpus and fit the LDA model again. After observing the results from this revised model, we ultimately specified the model to extract 15 topics with $\alpha = 0.15$. This was done because while observing the top five terms for each topic, different combinations of `K` topics and $\alpha$ values repeatedly produced more than 5 terms with equal $\beta$-s for many topics. Our final specifications seemed to produce a more parsimonious topic model. 
+ 
+### Visualizations
+
+ To assist with the interpretation of our topic models, we visualized the per-topic-per-term probabilities for both the Spanish Flu and the COVID-19 corpora. We created horizontal bar graphs for each topic; the bars indicating the probabilities of those five words that were most probable to appear within each topic. 
+ 
+```{r}
+### Spanish Flu
+## Per Topic Term Distribution
+library(ggplot2)
+library(reshape2)
+library(tidytext)
+spanishflu_topics <- tidy(topicModel_spanish2,matrix = "beta")
+spanishflu_topics
+top_terms_spanish <- spanishflu_topics %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 5) %>% 
+  ungroup() %>%
+  arrange(topic, -beta)
+top_terms_spanish_graph <- top_terms_spanish %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+   theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=60, hjust=1)) + 
+  xlim(0.00,0.15)+
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free", ncol= 5) +
+  scale_y_reordered()+
+  ggtitle("Distribution of Top 5 Terms per Topic for Spanish Flu")
+print(top_terms_spanish_graph)
 ```
 
 ```{r}
-# What happens here depends on the specific project
-```
-
-```{r}
-# What happens here depends on the specific project
+## COVID
+## Per Topic Term Distribution
+covid_topics_gsub2 <- tidy(topicModel_covid_gsub2,matrix = "beta")
+covid_topics_gsub2
+top_terms_covid_gsub2 <- covid_topics_gsub2 %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 5) %>% 
+  ungroup() %>%
+  arrange(topic, -beta)
+top_terms_covid_graph_gsub2 <-top_terms_covid_gsub2 %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  theme(text = element_text(size=7),
+        axis.text.x = element_text(angle=60, hjust=1)) + 
+  xlim(0.00, 0.30) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free", ncol= 4) +
+  scale_y_reordered()+
+  ggtitle("Distribution of Top 5 Terms per Topic for COVID")
+print(top_terms_covid_graph_gsub2)
 ```
 
 ## Discussion
