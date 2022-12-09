@@ -122,7 +122,6 @@ corpus_covid <-  tokens_replace(token_covid, # "Substitute token types based on 
 corpus_spanish <- corpus_spanish %>%
                              tokens_remove(stopwords("english")) %>%
                              tokens_ngrams(1)
-
 corpus_covid <- corpus_covid %>%
                              tokens_remove(stopwords("english")) %>%
                              tokens_ngrams(1)
@@ -162,10 +161,28 @@ corpus_covid <- corpus_covid[sel_idx_covid, ]
 
 ### Topic Modeling Using Latent Dirichlet Allocation
 
-This section presents the main results, such as (for example) stats and graphs that show relationships, model results and/or clustering, PCA, etc.
+  We used Latent Dirichlet Allocation (LDA) to examine topics from our two corpora of headlines. LDA is a frequently used algorithm for fitting a topic model. LDA is based on an assumption that documents used in your analysis are comprised of a mixture of topics, and that every topic is an amalgamation of words. LDA simultaneously finds the words associated with each topic while extracting the topics contained in each document.
+  
+  We specified our LDA model to extract 
 
 ```{r}
-# What happens here depends on the specific project
+K_spanish <- 15
+set.seed(1234)
+topicModel_spanish2 <- LDA(DTM_spanish, 
+                   K_spanish, 
+                   method="Gibbs", 
+                   control=list(iter = 500, 
+                                verbose = 25, 
+                                alpha = 0.2))
+tmResult_spanish2 <- posterior(topicModel_spanish2)
+theta_spanish2 <- tmResult_spanish2$topics
+beta_spanish2 <- tmResult_spanish2$terms
+topicProportions_spanish2 <- colSums(theta_spanish2) / nrow(DTM_spanish)  # average probability over all paragraphs
+names(topicProportions_spanish2) <- topicNames_spanish     # Topic Names 
+sort(topicProportions_spanish2, decreasing = TRUE) # sort
+topicNames_spanish2 <- apply(terms(topicModel_spanish2, 5), 2, paste, collapse = " ")  # top five terms per topic 
+
+
 ```
 
 ```{r}
