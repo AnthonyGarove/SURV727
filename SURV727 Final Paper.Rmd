@@ -61,46 +61,37 @@ This section describes the data sources and the data gathering process.
  We used the specific endpoints, month and year, while requesting for published article headlines from the New York Times Archive API with an authorised key. The following code was used to retrieve the data:
 
 ```{r}
-# Building URL-s
-
+# Building URLs
 base_url1 <- 'https://api.nytimes.com/svc/archive/v1/1918/3.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
 request1 <- GET(base_url1)
-
 base_url2 <- 'https://api.nytimes.com/svc/archive/v1/2020/3.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
 request2 <- GET(base_url2)
 
-class(request1)
-class(request2)
-
 # Getting the Contents as Data Frames
-
 response1 <- content(request1, as = "text", encoding = "UTF-8")
 spanishfludata <- fromJSON(response1, flatten = TRUE) %>% data.frame()
-
 response2 <- content(request2, as = "text", encoding = "UTF-8")
 coviddata <- fromJSON(response2, flatten = TRUE) %>% data.frame()
 
 # Extract the Subsetted Data 
-
 headline_spanish <- spanishfludata[,19]
 headline_covid <- coviddata[,20]
 ```
 
-We first formatted the JSON objects into two data frames --- one for the Spanish Flu and another for the COVID-19. After that, we extracted the headlines from both of the data frames and used those extracted objects for the remaining analysis.
-
-
+  We first formatted the JSON objects into two data frames --- one for the Spanish Flu and another for the COVID-19. After that, we extracted the headlines from both of the data frames and used those extracted objects for the remaining analysis.
 
 ## Results
 
-
-
 ### Pre Processing 
 
-Next, we pre-processed the headline texts using standard text mining procedures in order to prepare the data for topic modelling. These processes included steps such as tokenization, lemmatization and removing stopwords. After performing these steps,two corpora of texts were produced; one for the Spanish Flu headlines and another for the COVID-19 headlines.  
+  Next, we pre-processed the headline texts using standard text mining procedures in order to prepare the data for topic modelling. These processes included tokenization, lemmatization and removing stopwords.Tokenization is a method used in natural language processing that separates text data into units called "tokens". Tokenization can be done to break up data in to words, characters, and subwords. We used n=1 gram tokenization, which separates our headline data into one-word texts. 
+  
+  Lemmatization is a process that normalizes text such that words are substituted with their base root. This step is used to categorize words into groups of root forms with similar meanings. Stopwords are words that are frequently used in a given language, and these words are removed prior to topic modelling. This step is necessary because stopwords contribute noise when performing Latent Dirichlet Allocation, and removing stopwards allows researchers to interpret the topics extracted from text with more coherence. For both lemmatization and removal of stopwords, we used the standard English dictionary lemmas and stopwords.
+
+  After performing these pre-processing techniques, two corpora of texts were produced; one for Spanish Flu headlines and another for COVID-19 headlines. Based on the two corpora, we then created two document term matrices---where an individual row represents a single document, a column represents a single term, and each value in a matrix contains the frequency of that term in the document. Document-term-matrices are used as inputs for topic modelling with the `topicmodels` package. The code below was used for tokenization, lemmatization, removal of stopwards, and creation of document-term-matrices:
 
 ```{r}
 # Tokenization
-
 headline_spanish_gsub <- gsub("'","",headline_spanish)
 headline_covid_gsub <- gsub("’","",headline_covid)
 token_spanish <- tokens(headline_spanish_gsub,
@@ -108,7 +99,6 @@ token_spanish <- tokens(headline_spanish_gsub,
                         remove_numbers = TRUE,
                         remove_symbols = TRUE) %>%
   tokens_tolower()
-
 token_covid <- tokens(headline_covid_gsub,
                         remove_punct = TRUE,
                         remove_numbers = TRUE,
@@ -123,8 +113,6 @@ corpus_spanish <-  tokens_replace(token_spanish, # "Substitute token types based
                                     lemmaData$inflected_form, 
                                     lemmaData$lemma,
                                     valuetype = "fixed") 
-
-
 corpus_covid <-  tokens_replace(token_covid, # "Substitute token types based on vectorized one-to-one matching"
                                     lemmaData$inflected_form, 
                                     lemmaData$lemma,
@@ -138,13 +126,41 @@ corpus_spanish <- corpus_spanish %>%
 corpus_covid <- corpus_covid %>%
                              tokens_remove(stopwords("english")) %>%
                              tokens_ngrams(1)
+
+#Create document term matrices
+DTM_spanish <- dfm(corpus_spanish)
+minimumFrequency <- 10
+DTM_spanish <- dfm_trim(DTM_spanish, 
+                min_docfreq = minimumFrequency,
+                max_docfreq = 1000000)
+DTM_spanish  <- dfm_select(DTM_spanish, 
+                   pattern = "[a-z]", 
+                   valuetype = "regex", 
+                   selection = 'keep')
+colnames(DTM_spanish) <- stringi::stri_replace_all_regex(colnames(DTM_spanish), 
+                                                 "[^_a-z]","")
+DTM_spanish <- dfm_compress(DTM_spanish, "features")
+sel_idx_spanish <- rowSums(DTM_spanish) > 0
+DTM_spanish <- DTM_spanish[sel_idx_spanish, ]
+corpus_spanish <- corpus_spanish[sel_idx_spanish, ]
+DTM_covid <- dfm(corpus_covid)
+minimumFrequency <- 10
+DTM_covid <- dfm_trim(DTM_covid, 
+                min_docfreq = minimumFrequency,
+                max_docfreq = 1000000)
+DTM_covid  <- dfm_select(DTM_covid, 
+                   pattern = "[a-z]", 
+                   valuetype = "regex", 
+                   selection = 'keep')
+colnames(DTM_covid) <- stringi::stri_replace_all_regex(colnames(DTM_covid), 
+                                                 "[^_a-z]","")
+DTM_covid <- dfm_compress(DTM_covid, "features")
+sel_idx_covid <- rowSums(DTM_covid) > 0
+DTM_covid <- DTM_covid[sel_idx_covid, ]
+corpus_covid <- corpus_covid[sel_idx_covid, ]
 ```
 
-```{r}
-# What happens here depends on the specific project
-```
-
-### Analysis
+### Topic Modeling Using Latent Dirichlet Allocation
 
 This section presents the main results, such as (for example) stats and graphs that show relationships, model results and/or clustering, PCA, etc.
 
