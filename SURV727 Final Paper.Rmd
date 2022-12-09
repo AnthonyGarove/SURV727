@@ -56,24 +56,88 @@ Note that compiled term paper (the PDF) is supposed to be more text-centered tha
 
 This section describes the data sources and the data gathering process.
 
+ We used the New York Times Archive API to access N=12,028 article headlines published during the first month of each pandemic. To the best of our knowledge, the Spanish Flu was officially declared a pandemic on 4th March, 1918. The COVID-19 public health crisis was officially declared a pandemic on 11th March, 2020.
+
+ We used the specific endpoints, month and year, while requesting for published article headlines from the New York Times Archive API with an authorised key. The following code was used to retrieve the data:
+
 ```{r}
-# A code chunk that exemplifies the data gathering process
+# Building URL-s
+
+base_url1 <- 'https://api.nytimes.com/svc/archive/v1/1918/3.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
+request1 <- GET(base_url1)
+
+base_url2 <- 'https://api.nytimes.com/svc/archive/v1/2020/3.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
+request2 <- GET(base_url2)
+
+class(request1)
+class(request2)
+
+# Getting the Contents as Data Frames
+
+response1 <- content(request1, as = "text", encoding = "UTF-8")
+spanishfludata <- fromJSON(response1, flatten = TRUE) %>% data.frame()
+
+response2 <- content(request2, as = "text", encoding = "UTF-8")
+coviddata <- fromJSON(response2, flatten = TRUE) %>% data.frame()
+
+# Extract the Subsetted Data 
+
+headline_spanish <- spanishfludata[,19]
+headline_covid <- coviddata[,20]
 ```
 
-```{r, include = FALSE}
-# Additional code chunks that repeat tasks or do basic things can be hidden
-```
+We first formatted the JSON objects into two data frames --- one for the Spanish Flu and another for the COVID-19. After that, we extracted the headlines from both of the data frames and used those extracted objects for the remaining analysis.
+
+
 
 ## Results
 
-This section presents the main results.
 
-### Data exploration
 
-The results section may have a data exploration part, but in general the structure here depends on the specific project.
+### Pre Processing 
+
+Next, we pre-processed the headline texts using standard text mining procedures in order to prepare the data for topic modelling. These processes included steps such as tokenization, lemmatization and removing stopwords. After performing these steps,two corpora of texts were produced; one for the Spanish Flu headlines and another for the COVID-19 headlines.  
 
 ```{r}
-# What happens here depends on the specific project
+# Tokenization
+
+headline_spanish_gsub <- gsub("'","",headline_spanish)
+headline_covid_gsub <- gsub("’","",headline_covid)
+token_spanish <- tokens(headline_spanish_gsub,
+                        remove_punct = TRUE,
+                        remove_numbers = TRUE,
+                        remove_symbols = TRUE) %>%
+  tokens_tolower()
+
+token_covid <- tokens(headline_covid_gsub,
+                        remove_punct = TRUE,
+                        remove_numbers = TRUE,
+                        remove_symbols = TRUE) %>%
+  tokens_tolower()
+
+# Lemmatization
+library(haven)
+lemmaData <- read_sav("./lemma_spss.sav")
+
+corpus_spanish <-  tokens_replace(token_spanish, # "Substitute token types based on vectorized one-to-one matching"
+                                    lemmaData$inflected_form, 
+                                    lemmaData$lemma,
+                                    valuetype = "fixed") 
+
+
+corpus_covid <-  tokens_replace(token_covid, # "Substitute token types based on vectorized one-to-one matching"
+                                    lemmaData$inflected_form, 
+                                    lemmaData$lemma,
+                                    valuetype = "fixed") 
+
+# Removing Stopwords
+corpus_spanish <- corpus_spanish %>%
+                             tokens_remove(stopwords("english")) %>%
+                             tokens_ngrams(1)
+
+corpus_covid <- corpus_covid %>%
+                             tokens_remove(stopwords("english")) %>%
+                             tokens_ngrams(1)
 ```
 
 ```{r}
