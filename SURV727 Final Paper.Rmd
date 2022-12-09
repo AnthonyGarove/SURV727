@@ -38,6 +38,13 @@ references:
 ```{r, include = FALSE}
 library(knitr)
 library(tidyverse)
+library('httr')
+library('jsonlite')
+library(quanteda)
+library(topicmodels)
+library(ggplot2)
+library(reshape2)
+library(tidytext)
 ```
 
 ## Introduction
@@ -181,8 +188,14 @@ topicModel_spanish2 <- LDA(DTM_spanish,
 tmResult_spanish2 <- posterior(topicModel_spanish2)
 theta_spanish2 <- tmResult_spanish2$topics
 beta_spanish2 <- tmResult_spanish2$terms
+top5termsPerTopic_spanish2 <- terms(topicModel_spanish2, 
+                           5)
+topicNames_spanish2 <- apply(top5termsPerTopic_spanish2, 
+                    2, 
+                    paste, 
+                    collapse=" ")
 topicProportions_spanish2 <- colSums(theta_spanish2) / nrow(DTM_spanish)  # average probability over all headlines
-names(topicProportions_spanish2) <- topicNames_spanish     # Topic Names 
+names(topicProportions_spanish2) <- topicNames_spanish2     # Topic Names 
 sort(topicProportions_spanish2, decreasing = TRUE) # sort
 topicNames_spanish2 <- apply(terms(topicModel_spanish2, 5), 2, paste, collapse = " ")  # top five terms per topic 
 ```
@@ -193,7 +206,68 @@ topicNames_spanish2 <- apply(terms(topicModel_spanish2, 5), 2, paste, collapse =
  Our initial LDA model was set to extract 20 topics with $\alpha = 5$ from the corpus containing New York Times article headlines during the first month of the COVID-19 Pandemic. After examining the initial results, we reset our model to extract 10 topics with $\alpha$ to 0.15 to make the topics more interpretable. At this point, we observed that the word `Coronavirus` appeared in all 10 topics with the highest $\beta$-- suggesting that `Coronavirus` is potentially a stopword specific to this corpus of text. 
  
  Next we removed the term `Coronavirus` from the corpus and fit the LDA model again. After observing the results from this revised model, we ultimately specified the model to extract 15 topics with $\alpha = 0.15$. This was done because while observing the top five terms for each topic, different combinations of `K` topics and $\alpha$ values repeatedly produced more than 5 terms with equal $\beta$-s for many topics. Our final specifications seemed to produce a more parsimonious topic model. 
- 
+
+```{r include=FALSE}
+headline_covid_gsub2 <- gsub("Coronavirus","",headline_covid_gsub)
+token_covid_gsub2 <- tokens(headline_covid_gsub2,
+                        remove_punct = TRUE,
+                        remove_numbers = TRUE,
+                        remove_symbols = TRUE) %>%
+  tokens_tolower()
+```
+
+```{r include=FALSE}
+corpus_covid_gsub2 <-  tokens_replace(token_covid_gsub2,
+                                    lemmaData$inflected_form, 
+                                    lemmaData$lemma,
+                                    valuetype = "fixed") 
+corpus_covid_gsub2 <- corpus_covid_gsub2 %>%
+                             tokens_remove(stopwords("english")) %>%
+                             tokens_ngrams(1)
+```
+
+```{r include=FALSE}
+DTM_covid_gsub2 <- dfm(corpus_covid_gsub2)
+minimumFrequency <- 10
+DTM_covid_gsub2 <- dfm_trim(DTM_covid_gsub2, 
+                min_docfreq = minimumFrequency,
+                max_docfreq = 1000000)
+DTM_covid_gsub2  <- dfm_select(DTM_covid_gsub2, 
+                   pattern = "[a-z]", 
+                   valuetype = "regex", 
+                   selection = 'keep')
+colnames(DTM_covid_gsub2) <- stringi::stri_replace_all_regex(colnames(DTM_covid_gsub2), 
+                                                 "[^_a-z]","")
+DTM_covid_gsub2 <- dfm_compress(DTM_covid_gsub2, "features")
+sel_idx_covid_gsub2 <- rowSums(DTM_covid_gsub2) > 0
+DTM_covid_gsub2 <- DTM_covid_gsub2[sel_idx_covid_gsub2, ]
+corpus_covid_gsub2 <- corpus_covid_gsub2[sel_idx_covid_gsub2, ]
+```
+
+```{r}
+K_covid_gsub2 <- 15
+set.seed(1234)
+topicModel_covid_gsub2 <- LDA(DTM_covid_gsub2, 
+                  K_covid_gsub2,
+                  method="Gibbs", 
+                  control=list(iter = 500,
+                               verbose = 25,
+                               alpha = .15))
+tmResult_covid_gsub2 <- posterior(topicModel_covid_gsub2)
+beta_covid_gsub2 <- tmResult_covid_gsub2$terms
+glimpse(beta_covid_gsub2)            
+theta_covid_gsub2 <- tmResult_covid_gsub2$topics
+glimpse(theta_covid_gsub2)               
+terms(topicModel_covid_gsub2, 10)
+top5termsPerTopic_covid_gsub2 <- terms(topicModel_covid_gsub2, 
+                           5)
+topicNames_covid_gsub2 <- apply(top5termsPerTopic_covid_gsub2, 
+                    2, 
+                    paste, 
+                    collapse=" ")
+```
+
+
 ### Visualizations
 
  To assist with the interpretation of our topic models, we visualized the per-topic-per-term probabilities for both the Spanish Flu and the COVID-19 corpora. We created horizontal bar graphs for each topic; the bars indicating the probabilities of those five words that were most probable to appear within each topic. 
@@ -201,9 +275,6 @@ topicNames_spanish2 <- apply(terms(topicModel_spanish2, 5), 2, paste, collapse =
 ```{r}
 ### Spanish Flu
 ## Per Topic Term Distribution
-library(ggplot2)
-library(reshape2)
-library(tidytext)
 spanishflu_topics <- tidy(topicModel_spanish2,matrix = "beta")
 spanishflu_topics
 top_terms_spanish <- spanishflu_topics %>%
@@ -216,7 +287,7 @@ top_terms_spanish_graph <- top_terms_spanish %>%
   ggplot(aes(beta, term, fill = factor(topic))) +
    theme(text = element_text(size=10),
         axis.text.x = element_text(angle=60, hjust=1)) + 
-  xlim(0.00,0.15)+
+  xlim(0.00,0.2)+
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free", ncol= 5) +
   scale_y_reordered()+
@@ -241,7 +312,7 @@ top_terms_covid_graph_gsub2 <-top_terms_covid_gsub2 %>%
         axis.text.x = element_text(angle=60, hjust=1)) + 
   xlim(0.00, 0.30) +
   geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free", ncol= 4) +
+  facet_wrap(~ topic, scales = "free", ncol= 5) +
   scale_y_reordered()+
   ggtitle("Distribution of Top 5 Terms per Topic for COVID")
 print(top_terms_covid_graph_gsub2)
