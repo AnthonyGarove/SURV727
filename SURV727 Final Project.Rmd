@@ -339,7 +339,6 @@ library(ggplot2)
 library(reshape2)
 library(tidytext)
 spanishflu_topics <- tidy(topicModel_spanish2,matrix = "beta")
-spanishflu_topics
 
 top_terms_spanish <- spanishflu_topics %>%
   group_by(topic) %>%
@@ -367,7 +366,6 @@ print(top_terms_spanish_graph)
 ## Per Topic Term Distribution
 
 covid_topics <- tidy(topicModel_covid2,matrix = "beta")
-covid_topics
 
 top_terms_covid <- covid_topics %>%
   group_by(topic) %>%
@@ -488,7 +486,6 @@ topicNames_covid_gsub2 <- apply(top3termsPerTopic_covid_gsub2,
 ## Per Topic Term Distribution
 
 covid_topics_gsub2 <- tidy(topicModel_covid_gsub2,matrix = "beta")
-covid_topics_gsub2
 
 top_terms_covid_gsub2 <- covid_topics_gsub2 %>%
   group_by(topic) %>%
