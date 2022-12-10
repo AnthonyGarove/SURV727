@@ -57,7 +57,7 @@ Note that compiled term paper (the PDF) is supposed to be more text-centered tha
   
   We specifically chose to compare the Spanish Flu Pandemic of 1918 to the modern COVID-19 pandemic. We were curious to see how two pandemics from different centuries differed in terms of the areas of life they affected across the globe. We also considered that the type of disease in each pandemic may cause differences in how they affected the world (i.e., an influenza versus a coronavirus pandemic). We thought that searching the historical archives of printed media may provide insights to the research question at hand.
   
-  We operationalized this research question by asking, "using Latent Dirichlet Allocation, are there differences in the topics that emerge from published New York Times article headlines during the first respective month of the Spanish Flu and COVID-19 pandemic?"
+  We operationalized this research question by asking, "using Latent Dirichlet Allocation, can we observe differences in the topics that emerge from published New York Times article headlines during the first respective month of the Spanish Flu and COVID-19 pandemic?"
 
 ## Data
 
@@ -326,11 +326,19 @@ print(top_terms_covid_graph_gsub2)
 
 ### Topic Model of NYT Article Headlines from the First Month of The COVID-19 Pandemic 
 
- Our topic model of published NYT article headlines was specified to extract 15 topics from the COVID-19 corpus as well. Out of these 15 topics, 6 topics are not so coherent.The top 5 terms do not convey a clear understanding about these topics. Among the rest, Topic 1 seems to describe the COVID-19 stimulus package introduced by the Trump administration. Topic 3 comprises of terms that are clearly related to the COVID-19 pandemic. Topic 7 could be specifically related to the New York City. Topic 8 is clearly related to the 2020 US Presedential election. Topic 9 could be associated to the pandemic in terms of the effect of pandemic on the market and businesses. Topic 10 seems to be also related to  market 
+  Our topic model of published NYT article headlines was specified to extract 15 topics from the COVID-19 corpus as well. Out of these 15 topics, 6 topics are not so coherent. These topics include topic 2,4,5,6,9 and 15. The top 5 terms do not convey a clear understanding about these topics. Among the rest, Topic 1 seems to describe the COVID-19 stimulus package introduced by the Trump administration. Topic 3 comprises of terms that are clearly related to the COVID-19 pandemic. Topic 7 could be specifically related to the New York City. Topic 8 is clearly related to the 2020 US Presidential election. Topic 9 could be associated to the pandemic in terms of the effect of pandemic on the market and businesses. Topic 10 could potentially describe a briefing of the markets, although this topic is also not exactly clear. Topic 11 and 12 are clearly associated to the COVID-19 pandemic. Topic 13 might be indirectly related to the COVID-19 pandemic, with words such as "doctor" and "march" in the top 5 terms that we looked at. Topic 14 might relate to the President's response to the pandemic in some way. Overall, the topics that were clearly interpretable, seem to be related to the COVID-19 pandemic as well as different dimensions of it. Also, we had one topic that addressed the 2020 US Presidential election. 
 
 
-### Overall Discussion
+### Final Discussion
 
-Compare the two, overall summary of findings
+  Overall, the 15 topics extracted from the Spanish Flu corpus of headlines appeared to have more coherence than the topics that emerged from the COVID-19 corpus of headlines. Specifically, topics in the Spanish Flu corpus appeared to mostly be related to WWI. Topics that were unrelated to WWI were nonetheless coherent, with additional topics about legislative processes, sports and war, the economy and markets, and a few others. The topics that were able to be understood from the COVID-19 were scant in comparison to the topics from the Spanish Flu corpus. Generally, the topics that emerged from the COVID-19 pandemic were related to the pandemic itself, as well as aspects of society affected by the pandemic.
+  
+  The topics that emerged from the Spanish Flu corpus suggests that the early stages of the Spanish Flu pandemic did not appear to receive much coverage in the New York Times during the month of March 1918. It seems that the first month of the Spanish Flu pandemic was eclipsed by the ongoing World War. The topics that emerged from the COVID-19 pandemic corpus suggest that, during the month of March 2020, the topics covered in the New York Times were largely dominated by the COVID-19 pandemic. However, we did observe evidence of coverage of the 2020 US presidential election as well, with two topics clearly being related to the election.
+  
+  The research question posed in this paper was, "using Latent Dirichlet Allocation, can we observe differences in the topics that emerge from published New York Times article headlines during the first respective month of the Spanish Flu and COVID-19 pandemic?" Our findings indicate that there were differences in the topics that emerged from published New York Times article headlines during the first months of these two pandemics. However, the differences in topics published were more reflective of different historical events that were in the spotlight in those eras. We did not observe any topics published about the Spanish Flu, so we were unable to compare topics directly related to both pandemics.
+  
+  If this project was to be repeated, there are a few things that we could do differently.
+  
+  
 
 ## References
