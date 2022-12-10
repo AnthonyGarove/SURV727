@@ -1,5 +1,5 @@
 ---
-title: "Topic Modelling of New York Times Article Headlines During the Spanish Flu & COVID-19 Pandemic"
+title: "Topic Modeling of New York Times Article Headlines During the Spanish Flu & COVID-19 Pandemic"
 subtitle: "Term paper SURV727"
 author: "Anthony Garove and Ujjayini Das"
 date: "`r Sys.Date()`"
@@ -37,9 +37,11 @@ library(tidytext)
 
 ```{r}
 # Building URLs
-base_url1 <- 'https://api.nytimes.com/svc/archive/v1/1918/3.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
+base_url1 <- 
+'https://api.nytimes.com/svc/archive/v1/1918/3.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
 request1 <- GET(base_url1)
-base_url2 <- 'https://api.nytimes.com/svc/archive/v1/2020/3.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
+base_url2 <- 
+'https://api.nytimes.com/svc/archive/v1/2020/3.json?api-key=SVyAXhJrhFVCMF4tvGU2GZY3jm1greFU'
 request2 <- GET(base_url2)
 
 # Getting the Contents as Data Frames
@@ -83,12 +85,11 @@ token_covid <- tokens(headline_covid_gsub,
 # Lemmatization
 library(haven)
 lemmaData <- read_sav("./lemma_spss.sav")
-
-corpus_spanish <-  tokens_replace(token_spanish, # "Substitute token types based on vectorized one-to-one matching"
+corpus_spanish <-  tokens_replace(token_spanish, 
                                     lemmaData$inflected_form, 
                                     lemmaData$lemma,
                                     valuetype = "fixed") 
-corpus_covid <-  tokens_replace(token_covid, # "Substitute token types based on vectorized one-to-one matching"
+corpus_covid <-  tokens_replace(token_covid, 
                                     lemmaData$inflected_form, 
                                     lemmaData$lemma,
                                     valuetype = "fixed") 
@@ -138,13 +139,13 @@ corpus_covid <- corpus_covid[sel_idx_covid, ]
 
   We used Latent Dirichlet Allocation (LDA) to examine topics from our two corpora of headlines. LDA is a frequently used algorithm for fitting a topic model [1,5]. LDA is based on an assumption that documents used in your analysis are comprised of a mixture of topics, and that every topic is an amalgamation of words. LDA simultaneously finds the words associated with each topic while extracting the topics contained in each document [1,5].
   
-#### LDA for Spanish Flu Headlines
+#### LDA for Spanish Flu Headlines:
 
    Our initial LDA model was set to extract 20 topics with $\alpha = 3.33$ from the corpus containing New York Times article headlines during the first month of the Spanish Flu Pandemic. After examining the initial results, we reset our model to extract 15 topics with $\alpha$ to 0.2 to make the topics more comprehensible.   
   
   Next we observed the probability distributions of the 15 topics over all the headlines, given by `theta_spanish2` as well as the probability distribution of the words over all the 15 topics, given by `beta_spanish2`. To have a better understanding of the topics, we specifically looked into the five terms with the highest per-topic-per word probabilities within each topic.  
   
-```{r}
+```{r echo = TRUE, results = 'hide'}
 K_spanish <- 15
 set.seed(1234)
 topicModel_spanish2 <- LDA(DTM_spanish, 
@@ -162,20 +163,20 @@ topicNames_spanish2 <- apply(top5termsPerTopic_spanish2,
                     2, 
                     paste, 
                     collapse=" ")
-topicProportions_spanish2 <- colSums(theta_spanish2) / nrow(DTM_spanish)  # average probability over all headlines
-names(topicProportions_spanish2) <- topicNames_spanish2     # Topic Names 
-sort(topicProportions_spanish2, decreasing = TRUE) # sort
-topicNames_spanish2 <- apply(terms(topicModel_spanish2, 5), 2, paste, collapse = " ")  # top five terms per topic 
+topicProportions_spanish2 <- colSums(theta_spanish2) / nrow(DTM_spanish)
+names(topicProportions_spanish2) <- topicNames_spanish2
+sort(topicProportions_spanish2, decreasing = TRUE)
+topicNames_spanish2 <- apply(terms(topicModel_spanish2, 5), 2, paste, collapse = " ")
 ```
 
 
-#### LDA for COVID-19 Headlines
+#### LDA for COVID-19 Headlines:
 
  Our initial LDA model was set to extract 20 topics with $\alpha = 5$ from the corpus containing New York Times article headlines during the first month of the COVID-19 Pandemic. After examining the initial results, we reset our model to extract 10 topics with $\alpha$ to 0.15 to make the topics more interpretable. At this point, we observed that the word `Coronavirus` appeared in all 10 topics with the highest $\beta$-- suggesting that `Coronavirus` is potentially a stopword specific to this corpus of text. 
  
  Next we removed the term `Coronavirus` from the corpus and fit the LDA model again. After observing the results from this revised model, we ultimately specified the model to extract 15 topics with $\alpha = 0.15$. This was done because while observing the top five terms for each topic, different combinations of `K` topics and $\alpha$ values repeatedly produced more than 5 terms with equal $\beta$-s for many topics. Our final specifications seemed to produce a more parsimonious topic model. 
 
-```{r include=FALSE}
+```{r}
 headline_covid_gsub2 <- gsub("Coronavirus","",headline_covid_gsub)
 token_covid_gsub2 <- tokens(headline_covid_gsub2,
                         remove_punct = TRUE,
@@ -212,7 +213,7 @@ DTM_covid_gsub2 <- DTM_covid_gsub2[sel_idx_covid_gsub2, ]
 corpus_covid_gsub2 <- corpus_covid_gsub2[sel_idx_covid_gsub2, ]
 ```
 
-```{r}
+```{r echo = TRUE, results = 'hide'}
 K_covid_gsub2 <- 15
 set.seed(1234)
 topicModel_covid_gsub2 <- LDA(DTM_covid_gsub2, 
@@ -244,7 +245,6 @@ topicNames_covid_gsub2 <- apply(top5termsPerTopic_covid_gsub2,
 ### Spanish Flu
 ## Per Topic Term Distribution
 spanishflu_topics <- tidy(topicModel_spanish2,matrix = "beta")
-spanishflu_topics
 top_terms_spanish <- spanishflu_topics %>%
   group_by(topic) %>%
   slice_max(beta, n = 5) %>% 
@@ -267,7 +267,6 @@ print(top_terms_spanish_graph)
 ## COVID
 ## Per Topic Term Distribution
 covid_topics_gsub2 <- tidy(topicModel_covid_gsub2,matrix = "beta")
-covid_topics_gsub2
 top_terms_covid_gsub2 <- covid_topics_gsub2 %>%
   group_by(topic) %>%
   slice_max(beta, n = 5) %>% 
@@ -306,7 +305,7 @@ print(top_terms_covid_graph_gsub2)
 
   There were a few other topics that were not entirely uninterpretable. Topic 7 could be specifically related to New York City, but also contained the words "art" and "school". Topic 10 seemed to possibly describe a briefing related to markets, although this is not entirely clear. Topic 13 might be indirectly related to the COVID-19 pandemic, with words such as "doctor" and "march" in its top 5 terms per topic. Topic 14 seemed to be specifically related to Donald Trump but also contained unrelated words.
 
-### Final Discussion
+### Overall Discussion
 
   Overall, the 15 topics extracted from the Spanish Flu corpus of headlines appeared to have more cogency than the topics that were extracted from the COVID-19 corpus of headlines. Specifically, topics in the Spanish Flu corpus appeared to be mostly related to WWI. Topics that were unrelated to WWI were nonetheless coherent, with additional topics about governmental processes, economy and markets, and a few others. The topics that were able to be understood from the COVID-19 corpus were scant in comparison to the topics from the Spanish Flu corpus. Generally, the topics that were extracted from the COVID-19 pandemic were related to the pandemic itself.
   
@@ -314,7 +313,7 @@ print(top_terms_covid_graph_gsub2)
   
   The research question posed at the beginning of this paper was, "can we observe differences in the topics that emerge from published New York Times article headlines during the first respective month of the Spanish Flu and COVID-19 pandemic using Latent Dirichlet Allocation?" Our findings indicate that there are differences in the topics that emerged from published New York Times article headlines during the first months of these two pandemics. However, the differences we observed were reflected two different historical events---WWI and the COVID-19 pandemic. We were unable to observe any topics published about the Spanish Flu. Thus, we could not compare topics across both pandemics.
 
-#### Limitations and Future Directions
+#### Limitations and Future Directions:
 
   If this project was to be repeated, there are a few things that could be done differently. First, future research could specify a larger reference period in the search parameters of the New York Times Archive API. For the Spanish Flu corpus, extending the query's time frame beyond the month of March 1918 may have resulted in headlines related to the Spanish Flu pandemic. In other words, it may have been to early on in the pandemic (with an ongoing war) to have been extensively covered. Only examining headlines from the first respective month of each pandemic may have been too narrow of a time frame to be able to make comparisons between the two pandemics.
   
@@ -337,7 +336,3 @@ print(top_terms_covid_graph_gsub2)
 5. Silge, J., & Robinson, D. (2017). Text mining with R : a tidy approach. O’reilly. https://www.tidytextmining.com/
 
 6. Wickham, H. (2019). ggplot2 Elegant Graphics for Data Analysis Second Edition GitHub. https://github.com/hadley/ggplot2-book
-
-
-
-
