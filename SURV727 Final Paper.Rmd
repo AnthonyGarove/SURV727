@@ -7,32 +7,6 @@ output:
   pdf_document:
     toc: yes
     df_print: kable
-references:
-- id: Wickham2014
-  title: Tidy Data
-  author:
-  - family: Wickham
-    given: Hadley
-  container-title: Journal of Statistical Software
-  volume: 59
-  issue: 10
-  page: 1-23
-  type: article-journal
-  issued:
-    year: 2014
-- id: Baumer2017
-  title: Modern Data Science with R
-  author:
-  - family: Baumer
-    given: Benjamin S.
-  - family: Kaplan
-    given: Daniel T.
-  - family: Horton
-    given: Nicholas J.
-  type: book
-  publisher: Chapman \& Hall/CRC Press.
-  issued:
-    year: 2017
 ---
 
 ```{r, include = FALSE}
@@ -49,21 +23,15 @@ library(tidytext)
 
 ## Introduction
 
-This section outlines the research idea. We can also cite related work here [@Wickham2014; @Baumer2017].
-
-Note that compiled term paper (the PDF) is supposed to be more text-centered than the RMarkdown documents we used in class, i.e. the text sections are more detailed and big or redundant code chunks can be hidden.
-
-  For our final term paper, Ujjayini and I were generally interested in making historical comparisons across different pandemics. Our overarching purpose was to obtain insights about the similarities in major societal issues caused by pandemics, as well as to examine time-era specific differences across pandemics from different points in history.
+  The overarching purpose of this term paper was to obtain insights about the similarities in major societal issues caused by pandemics, as well as to examine time-era specific differences across pandemics from different points in history. As researchers interested in history, we sought to make historical comparisons across different pandemics using text as data.
   
-  We specifically chose to compare the Spanish Flu Pandemic of 1918 to the modern COVID-19 pandemic. We were curious to see how two pandemics from different centuries differed in terms of the areas of life they affected across the globe. We also considered that the type of disease in each pandemic may cause differences in how they affected the world (i.e., an influenza versus a coronavirus pandemic). We thought that searching the historical archives of printed media may provide insights to the research question at hand.
+  We specifically chose to compare the Spanish Flu Pandemic of 1918 to the modern COVID-19 pandemic. We were curious to see how these two pandemics from different centuries compared in terms of the areas of life they affected. We hypothesized that, since each pandemic caused widespread disease of different classes (i.e., an influenza versus coronavirus pandemic), we might observe differences in how each pandemic affected society. Searching the historical archives of printed media could theoretically provide insights to this research question.
   
-  We operationalized this research question by asking, "using Latent Dirichlet Allocation, can we observe differences in the topics that emerge from published New York Times article headlines during the first respective month of the Spanish Flu and COVID-19 pandemic?"
+  We operationalized this research question by asking, "can we observe differences in the topics that emerge from published New York Times article headlines during the first respective month of the Spanish Flu and COVID-19 pandemic using Latent Dirichlet Allocation?"
 
 ## Data
 
-This section describes the data sources and the data gathering process.
-
- We used the New York Times Archive API to access N=12,028 article headlines published during the first month of each pandemic. To the best of our knowledge, the Spanish Flu was officially declared a pandemic on 4th March, 1918. The COVID-19 public health crisis was officially declared a pandemic on 11th March, 2020.
+  We used the New York Times Archive API [3] to access N=12,028 article headlines published during the first month of each pandemic. The Spanish Flu was officially declared a pandemic around March 4, 1918 [4]. The COVID-19 public health crisis was officially declared a pandemic on 11th March, 2020 [2].
 
  We used the specific endpoints, month and year, while requesting for published article headlines from the New York Times Archive API with an authorized key. The following code was used to retrieve the data:
 
@@ -91,11 +59,11 @@ headline_covid <- coviddata[,20]
 
 ### Pre Processing 
 
-  Next, we pre-processed the headline texts using standard text mining procedures in order to prepare the data for topic modelling. These processes included tokenization, lemmatization and removing stopwords.Tokenization is a method used in natural language processing that separates text data into units called "tokens". Tokenization can be done to break up data in to words, characters, and subwords. We used n=1 gram tokenization, which separates our headline data into one-word texts. 
+  Next, we pre-processed the headline texts using standard text mining procedures in order to prepare the data for topic modelling [5]. These processes included tokenization, lemmatization and removing stopwords.Tokenization is a method used in natural language processing that separates text data into units called "tokens". Tokenization can be done to break up data in to words, characters, and subwords. We used n=1 gram tokenization, which separates our headline data into one-word texts [5]. 
   
-  Lemmatization is a process that normalizes text such that words are substituted with their base root. This step is used to categorize words into groups of root forms with similar meanings. Stopwords are words that are frequently used in a given language, and these words are removed prior to topic modelling. This step is necessary because stopwords contribute noise when performing Latent Dirichlet Allocation, and removing stopwards allows researchers to interpret the topics extracted from text with more coherence. For both lemmatization and removal of stopwords, we used the standard English dictionary lemmas and stopwords.
+  Lemmatization is a process that normalizes text such that words are substituted with their base root. This step is used to categorize words into groups of root forms with similar meanings. Stopwords are words that are frequently used in a given language, and these words are removed prior to topic modelling. This step is necessary because stopwords contribute noise when performing Latent Dirichlet Allocation, and removing stopwords allows researchers to interpret the topics extracted from text with more coherence. For both lemmatization and removal of stopwords, we used the standard English dictionary lemmas and stopwords [5].
 
-  After performing these pre-processing techniques, two corpora of texts were produced; one for Spanish Flu headlines and another for COVID-19 headlines. Based on the two corpora, we then created two document term matrices---where an individual row represents a single document, a column represents a single term, and each value in a matrix contains the frequency of that term in the document. Document-term-matrices are used as inputs for topic modelling with the `topicmodels` package. The code below was used for tokenization, lemmatization, removal of stopwards, and creation of document-term-matrices:
+  After performing these pre-processing techniques, two corpora of texts were produced; one for Spanish Flu headlines and another for COVID-19 headlines. Based on the two corpora, we then created two document term matrices---where an individual row represents a single document, a column represents a single term, and each value in a matrix contains the frequency of that term in the document [1,5]. Document-term-matrices are used as inputs for topic modelling with the `topicmodels` package. The code below was used for tokenization, lemmatization, removal of stopwards, and creation of document-term-matrices:
 
 ```{r}
 # Tokenization
@@ -168,7 +136,7 @@ corpus_covid <- corpus_covid[sel_idx_covid, ]
 
 ### Topic Modeling Using Latent Dirichlet Allocation
 
-  We used Latent Dirichlet Allocation (LDA) to examine topics from our two corpora of headlines. LDA is a frequently used algorithm for fitting a topic model. LDA is based on an assumption that documents used in your analysis are comprised of a mixture of topics, and that every topic is an amalgamation of words. LDA simultaneously finds the words associated with each topic while extracting the topics contained in each document.
+  We used Latent Dirichlet Allocation (LDA) to examine topics from our two corpora of headlines. LDA is a frequently used algorithm for fitting a topic model [1,5]. LDA is based on an assumption that documents used in your analysis are comprised of a mixture of topics, and that every topic is an amalgamation of words. LDA simultaneously finds the words associated with each topic while extracting the topics contained in each document [1,5].
   
 #### LDA for Spanish Flu Headlines
 
@@ -270,7 +238,7 @@ topicNames_covid_gsub2 <- apply(top5termsPerTopic_covid_gsub2,
 
 ### Visualizations
 
- To assist with the interpretation of our topic models, we visualized the per-topic-per-term probabilities for both the Spanish Flu and the COVID-19 corpora. We created horizontal bar graphs for each topic; the bars indicating the probabilities of those five words that were most probable to appear within each topic. 
+ To assist with the interpretation of our topic models, we visualized the per-topic-per-term probabilities for both the Spanish Flu and the COVID-19 corpora. We created horizontal bar graphs for each topic [6]; the bars indicating the probabilities of those five words that were most probable to appear within each topic.
  
 ```{r}
 ### Spanish Flu
@@ -322,26 +290,54 @@ print(top_terms_covid_graph_gsub2)
 
 ### Topic Model of NYT Article Headlines from the First Month of The Spanish Flu Pandemic
 
-  Our topic model of published NYT article headlines was specified to extract 15 topics. Topic 1 is comprised of words specifically related to the legislative process in the United States. Topic 2 is a bit more ambiguous than topic one, but has the words "war" and "president", suggesting that this topic might be related to World War I (WWI). Topic 3 appears to be about New York City (NYC), and also contains the word "obituary" and "title". Topic 3 could perhaps be reflective of obituaries of people from NYC. Topics 4 and 14 are both comprised of words that could either describe sports or war. Topics 5 through 7 all appear to be related to the US economy, markets, and goods. Topics 8 through 10 are similarly comprised of different nations involved in WWI, as well as other war-related terms. Topic 11 is similar to topics 8 through 10, insofar as it appears to be related to WWI and contains a nation involved in the war (i.e., "American"). However, topic 11 does not seem to be as clearly related to an easily identifiable topic. Topic 12 consists of terms that mostly seem related to judicial processes. Topic 13 is not so easy to interpret, though it appears to be gendered and related to women in some way. Topic 13 could potentially be related to the woman's suffrage movement, which took place around the time of the Spanish Flu Pandemic and World War I. It's also noteworthy that there are two terms for this particular topic that have the same probabilities ("wed" and "honor" with a $\beta$ value of 0.017). Topic 15 is, again, related to WWI---and specifically comprised of terms that could be used when describing the army. Overall, it would appear the majority of the topics that were extracted from this corpus of headlines seem to be related to WWI, as well as different aspects of society affected by the war.
+  Our topic model of published NYT article headlines was specified to extract 15 topics. Overall, it would appear that the majority of the topics extracted from this corpus seem to be related to WWI.
+  
+  Topics 8 through 10 were comprised of different nations involved in WWI, as well as other war-related terms. Topic 11 was similar to topics 8 through 10, insofar as it appeared to be related to WWI and contained a nation involved in the war (i.e., "American"). Topic 2 was a bit ambiguous, but contained the words "war" and "president"---suggesting that this topic is also related to World War I (WWI). Topic 15 is yet another topic that appeared to be related to the war. It is specifically comprised of terms that could be used when describing the army. Topics 4 and 14 are both comprised of words that could either describe sports or war.
+  
+  Other interpretable topics were also extracted from this corpus. Topic 1 is comprised of words specifically related to legislative processes in the United States, and topic 12 consists of terms that mostly seem related to judicial processes. Topics 5 through 7 all appear to be related to the US economy, markets, and/or goods. 
+  
+  There were a few other topics that varied in their composition with less interpretability. Topic 3 seemed to be related to New York City (NYC) and had the terms, "obituary" and "title". This topic could perhaps reflect obituaries of persons who resided in NYC. Topic 13 is not so easy to interpret, though it is gendered and related to women in some way. This topic could potentially be related to the woman's suffrage movement, which took place during this time period. It is also noteworthy that there are two terms for this particular topic that have the same probabilities ("wed" and "honor" with a $\beta$ value of 0.017).
 
 ### Topic Model of NYT Article Headlines from the First Month of The COVID-19 Pandemic 
 
-  Our topic model of published NYT article headlines was specified to extract 15 topics from the COVID-19 corpus as well. Out of these 15 topics, 6 topics are not so coherent. These topics include topic 2,4,5,6,9 and 15. The top 5 terms do not convey a clear understanding about these topics. Among the rest, Topic 1 seems to describe the COVID-19 stimulus package introduced by the Trump administration. Topic 3 comprises of terms that are clearly related to the COVID-19 pandemic. Topic 7 could be specifically related to the New York City. Topic 8 is clearly related to the 2020 US Presidential election. Topic 9 could be associated to the pandemic in terms of the effect of pandemic on the market and businesses. Topic 10 could potentially describe a briefing of the markets, although this topic is also not exactly clear. Topic 11 and 12 are clearly associated to the COVID-19 pandemic. Topic 13 might be indirectly related to the COVID-19 pandemic, with words such as "doctor" and "march" in the top 5 terms that we looked at. Topic 14 might relate to the President's response to the pandemic in some way. Overall, the topics that were clearly interpretable, seem to be related to the COVID-19 pandemic as well as different dimensions of it. Also, we had one topic that addressed the 2020 US Presidential election. 
+  Our topic model of published NYT article headlines was specified to extract 15 topics from the COVID-19 corpus. Out of these 15 topics, 6 of the topics could not be interpreted. These topics were: 2, 4, 5, 6, 9 and 15.
+  
+  The majority of remaining interpretable topics were related to the COVID-19 pandemic. Topic 1 seemed to describe the COVID-19 stimulus package introduced by the Trump administration. Topic 3 was comprised of terms that are clearly related to the COVID-19 pandemic (i.e., "case", "virus", and others). Topic 11 described social distancing, with the words "stay" and "home" in its top 5 terms per topic. Topic 12 was comprised of a mix of words related to the COVID-19 pandemic. It should also be noted that one additional cogent topic unrelated to the COVID-19 pandemic was extracted. This was topic 8, which consisted of terms related to the 2020 US presidential election.
 
+  There were a few other topics that were not entirely uninterpretable. Topic 7 could be specifically related to New York City, but also contained the words "art" and "school". Topic 10 seemed to possibly describe a briefing related to markets, although this is not entirely clear. Topic 13 might be indirectly related to the COVID-19 pandemic, with words such as "doctor" and "march" in its top 5 terms per topic. Topic 14 seemed to be specifically related to Donald Trump but also contained unrelated words.
 
 ### Final Discussion
 
-  Overall, the 15 topics extracted from the Spanish Flu corpus of headlines appeared to have more coherence than the topics that emerged from the COVID-19 corpus of headlines. Specifically, topics in the Spanish Flu corpus appeared to mostly be related to WWI. Topics that were unrelated to WWI were nonetheless coherent, with additional topics about legislative processes, sports and war, the economy and markets, and a few others. The topics that were able to be understood from the COVID-19 were scant in comparison to the topics from the Spanish Flu corpus. Generally, the topics that emerged from the COVID-19 pandemic were related to the pandemic itself, as well as aspects of society affected by the pandemic.
+  Overall, the 15 topics extracted from the Spanish Flu corpus of headlines appeared to have more cogency than the topics that were extracted from the COVID-19 corpus of headlines. Specifically, topics in the Spanish Flu corpus appeared to be mostly related to WWI. Topics that were unrelated to WWI were nonetheless coherent, with additional topics about governmental processes, economy and markets, and a few others. The topics that were able to be understood from the COVID-19 corpus were scant in comparison to the topics from the Spanish Flu corpus. Generally, the topics that were extracted from the COVID-19 pandemic were related to the pandemic itself.
   
-  The topics that emerged from the Spanish Flu corpus suggests that the early stages of the Spanish Flu pandemic did not appear to receive much coverage in the New York Times during the month of March 1918. It seems that the first month of the Spanish Flu pandemic was eclipsed by the ongoing World War. The topics that emerged from the COVID-19 pandemic corpus suggest that, during the month of March 2020, the topics covered in the New York Times were largely dominated by the COVID-19 pandemic. However, we did observe evidence of coverage of the 2020 US presidential election as well, with two topics clearly being related to the election.
+  The topics that emerged from the Spanish Flu corpus suggests that the early stages of the Spanish Flu pandemic did not appear to receive much coverage in the New York Times during the month of March 1918. It seems that the first month of the Spanish Flu pandemic was eclipsed by the ongoing World War. The topics that emerged from the COVID-19 pandemic corpus suggest that, during the month of March 2020, the topics covered in the New York Times were largely dominated by the COVID-19 pandemic. However, we did observe coverage of the 2020 US presidential election in our topic model, with one topic clearly being related to the election.
   
-  The research question posed in this paper was, "using Latent Dirichlet Allocation, can we observe differences in the topics that emerge from published New York Times article headlines during the first respective month of the Spanish Flu and COVID-19 pandemic?" Our findings indicate that there were differences in the topics that emerged from published New York Times article headlines during the first months of these two pandemics. However, the differences in topics published were more reflective of different historical events that were in the spotlight in those eras. We did not observe any topics published about the Spanish Flu, so we were unable to compare topics directly related to both pandemics.
+  The research question posed at the beginning of this paper was, "can we observe differences in the topics that emerge from published New York Times article headlines during the first respective month of the Spanish Flu and COVID-19 pandemic using Latent Dirichlet Allocation?" Our findings indicate that there are differences in the topics that emerged from published New York Times article headlines during the first months of these two pandemics. However, the differences we observed were reflected two different historical events---WWI and the COVID-19 pandemic. We were unable to observe any topics published about the Spanish Flu. Thus, we could not compare topics across both pandemics.
 
 #### Limitations and Future Directions
 
-  If this project was to be repeated, there are a few things that we could do differently. First, we could specify a larger reference period in the search parameters of the New York Times Archive API. For the Spanish Flu corpus, extending the query's time frame beyond the month of March 1918 may have resulted in headlines related to the Spanish Flu pandemic. Only examining headlines from the first respective month of each pandemic may have been too narrow of a reference time frame to be able to make comparisons between the two pandemics.
+  If this project was to be repeated, there are a few things that could be done differently. First, future research could specify a larger reference period in the search parameters of the New York Times Archive API. For the Spanish Flu corpus, extending the query's time frame beyond the month of March 1918 may have resulted in headlines related to the Spanish Flu pandemic. In other words, it may have been to early on in the pandemic (with an ongoing war) to have been extensively covered. Only examining headlines from the first respective month of each pandemic may have been too narrow of a time frame to be able to make comparisons between the two pandemics.
   
   Beyond modifying the search parameters of our query in the NYT Archive API, we could have used a different API altogether. If we were to use a different API to collect text data, such as the NYT Article API, we may have been able to use additional endpoints---resulting in more specific corpora as inputs for our topic models. Using more specific corpora would potentially allow us to make better comparisons between the pandemics.
   
-  Another method to answering this research question would be to use an alternative medium for topic modeling. One approach could be to use books published about each pandemic as the two corpora for fitting a topic model. If we were to use two books specifically for each pandemic as corpora, we would be then be more directly able to compare topics related to both pandemics.  
+  Another method to answering this research question could have involved entirely different media for topic modeling. One approach could be to use published books [1] about each pandemic as the two corpora for fitting topic models. If we were to use two books specifically about the history of each pandemic as corpora, we would then be able to directly compare topics across both pandemics.  
+
 ## References
+
+### In-text citations noted in brackets []
+
+1. Baumer, B., Kaplan, D., & Horton, N. J. (2021). Modern data science with R. Crc Press.     https://mdsr-book.github.io/mdsr2e/
+
+2. Morens DM, Daszak P, Markel H, Taubenberger JK. 2020. Pandemic COVID-19 joins history’s pandemic legion. https://doi.org/10.1128/mBio.00812-20.
+
+3. Nytimes.com. (2022). https://developer.nytimes.com/docs/archive-product/1/overview
+
+4. Reid, A,H, Taubenberger, J.K., & Fanning, T.G. (2001). The 1918 Spanish influenza: Integrating history and biology. Microbes and Infection, 3 (1) (2001), pp. 81-87
+
+5. Silge, J., & Robinson, D. (2017). Text mining with R : a tidy approach. O’reilly. https://www.tidytextmining.com/
+
+6. Wickham, H. (2019). ggplot2 Elegant Graphics for Data Analysis Second Edition GitHub. https://github.com/hadley/ggplot2-book
+
+
+
+
