@@ -9,6 +9,8 @@ output:
     df_print: kable
 ---
 
+The link to the GitHub repository is provided [click here](https://github.com/AnthonyGarove/SURV727.git).
+
 ```{r, include = FALSE}
 library(knitr)
 library(tidyverse)
