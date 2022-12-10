@@ -511,17 +511,3 @@ print(top_terms_covid_graph_gsub2)
 
 ```
 
-## Discussion
-
-### Topic Model of NYT Article Headlines from the First Month of The Spanish Flu Pandemic
-
-  Our topic model of published NYT article headlines was specified to extract 15 topics. Topic 1 is comprised of words specifically related to the legislative process in the United States. Topic 2 is a bit more ambiguous than topic one, but has the words "war" and "president", suggesting that this topic might be related to World War I (WWI). Topic 3 appears to be about New York City (NYC), and also contains the word "obituary" and "title". Topic 3 could perhaps be reflective of obituaries of people from NYC. Topics 4 and 14 are both comprised of words that could either describe sports or war. Topics 5 through 7 all appear to be related to the US economy, markets, and goods. Topics 8 through 10 are similarly comprised of different nations involved in WWI, as well as other war-related terms. Topic 11 is similar to topics 8 through 10, insofar as it appears to be related to WWI and contains a nation involved in the war (i.e., "American"). However, topic 11 does not seem to be as clearly related to an easily identifiable topic. Topic 12 consists of terms that mostly seem related to judicial processes. Topic 13 is not so easy to interpret, though it appears to be gendered and related to women in some way. Topic 13 could potentially be related to the woman's suffrage movement, which took place around the time of the Spanish Flu Pandemic and World War I. It's also noteworthy that there are two terms for this particular topic that have the same probabilities ("wed" and "honor" with a $\beta$ value of 0.017). Topic 15 is, again, related to WWI---and specifically comprised of terms that could be used when describing the army. Overall, it would appear the majority of the topics that were extracted from this corpus of headlines seem to be related to WWI, as well as different aspects of society affected by the war.
-
-### Topic Model of NYT Article Headlines from the First Month of The COVID-19 Pandemic 
-
- Our topic model of published NYT article headlines was specified to extract 15 topics from the COVID-19 corpus as well. Out of these 15 topics, 6 topics are not so coherent. These topics include topic 2,4,5,6,9 and 15. The top 5 terms do not convey a clear understanding about these topics. Among the rest, Topic 1 seems to describe the COVID-19 stimulus package introduced by the Trump administration. Topic 3 comprises of terms that are clearly related to the COVID-19 pandemic. Topic 7 could be specifically related to the New York City. Topic 8 is clearly related to the 2020 US Presidential election. Topic 9 could be associated to the pandemic in terms of the effect of pandemic on the market and businesses. Topic 10 could potentially describe a briefing of the markets, although this topic is also not exactly clear. Topic 11 and 12 are clearly associated to the COVID-19 pandemic. Topic 13 might be indirectly related to the COVID-19 pandemic, with words such as "doctor" and "march" in the top 5 terms that we looked at. Topic 14 might relate to the President's response to the pandemic in some way. Overall, the topics that were clearly interpretable, seem to be related to the COVID-19 pandemic as well as different dimensions of it. Also, we had one topic that addressed the 2020 US Presidential election. 
-
-
-### Overall Discussion
-
- 
